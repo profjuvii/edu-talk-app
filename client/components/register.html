@@ -1,0 +1,54 @@
+<section class="parent-box-auth">
+  <div id="register">
+    <h2>Sign Up</h2>
+
+    <form class="auth-form">
+      <div class="input-row">
+        <div class="input-field">
+          <input type="text" placeholder=" " id="first-name" maxlength="50" />
+          <label for="first-name">First Name*</label>
+        </div>
+        <div class="input-field">
+          <input type="text" placeholder=" " id="last-name" maxlength="50" />
+          <label for="last-name">Last Name*</label>
+        </div>
+      </div>
+
+      <div class="input-field">
+        <input type="text" placeholder=" " id="username" maxlength="50" />
+        <label for="username">Username*</label>
+      </div>
+
+      <div class="input-field" id="role-input-field">
+        <input type="text" id="role" readonly />
+        <div class="custom-dropdown" id="dropdown">
+          <div class="option">Student</div>
+          <div class="option">Teacher</div>
+        </div>
+        <label for="role">Role*</label>
+      </div>
+
+      <div class="input-field">
+        <input type="email" placeholder=" " id="email" maxlength="50" />
+        <label for="email">Email*</label>
+      </div>
+
+      <div class="input-field">
+        <input type="text" placeholder=" " id="phone" maxlength="15" />
+        <label for="phone">Phone</label>
+      </div>
+
+      <div>
+        <div class="input-field">
+          <input type="password" placeholder=" " id="password" maxlength="16" />
+          <label for="password">Password*</label>
+        </div>
+        <span class="hint">Password must be at least 8 characters</span>
+      </div>
+
+      <button type="submit" id="auth-btn">Register</button>
+    </form>
+
+    <div id="logreg-link">Already have an account? Log In</div>
+  </div>
+</section>
