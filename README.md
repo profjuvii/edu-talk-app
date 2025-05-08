@@ -25,6 +25,7 @@
 * **My Topics**: See only your own posts, with options to edit or delete.
 
   ![My Topics](screenshots/my-topics.png)
+  ![Update Post](screenshots/update-post.png)
 
 * **New Topic**: Create a post by entering text and optionally uploading an image.
 
