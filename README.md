@@ -2,7 +2,7 @@
 [![html5](https://img.shields.io/badge/html5-E34F26?style=flat\&logo=html5\&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![css3](https://img.shields.io/badge/css3-1572B6?style=flat\&logo=css3\&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 [![node.js](https://img.shields.io/badge/node.js-8CC84B?style=flat\&logo=node.js\&logoColor=white)](https://nodejs.org/)
-[![postgresql](https://img.shields.io/badge/postgresql-4169E1?style=flat\&logo=postgresql\&logoColor=white)](https://www.postgresql.org/)
+[![postgresql](https://img.shields.io/badge/postgresql-blue?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
 # Edu Talk Web Application
 
@@ -10,7 +10,7 @@
 
 ## Features
 
-* **User Authentication**: Sign up and log in securely.
+* **User Authentication**: Secure registration and login via email or Google account.
 * **Navigation**: Switch between app sections via a simple navigation panel.
 * **Home**: View posts from all users; like and comment on them.
 * **My Topics**: See only your own posts, with options to edit or delete.
@@ -32,6 +32,7 @@
   ```
   PORT=your_port
   DATABASE_URL=your_database_url
+  CLIENT_ID=your_client_id
   ```
 
 ## Setup Instructions
@@ -58,7 +59,7 @@
 
 > [!NOTE]
 >
-> This project is not deployed online and runs locally on `localhost`. It was created solely for educational purposes.
+> This project is not deployed online and runs locally on `localhost`.
 
 ## Author
 
