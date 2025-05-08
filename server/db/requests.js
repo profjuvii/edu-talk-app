@@ -1,5 +1,6 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
+const { OAuth2Client } = require('google-auth-library');
 const { app } = require("../app.js");
 
 const { sequelize, User, Topic, Comment, UserTopic } = require('./config.js');
@@ -76,6 +77,23 @@ app.delete('/users/:id', async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
+        const likedTopics = await UserTopic.findAll({
+            where: {
+                userId: id,
+                isLiked: true
+            }
+        });
+
+        for (const userTopic of likedTopics) {
+            const topic = await Topic.findByPk(userTopic.topicId);
+            if (topic && topic.likeCount > 0) {
+                topic.likeCount -= 1;
+                await topic.save();
+            }
+        }
+
+        await UserTopic.destroy({ where: { userId: id } });
+
         await user.destroy();
 
         res.status(200).json({ message: 'User successfully deleted' });
@@ -136,7 +154,8 @@ app.get('/users/:id/topics/home', async (req, res) => {
                     where: { userId: id },
                     required: false
                 }
-            ]
+            ],
+            order: [['createdAt', 'DESC']]
         });
 
         const topicsWithUserNamesAndLikes = topics.map(topic => ({
@@ -165,7 +184,8 @@ app.get('/users/:id/topics/my-topics', async (req, res) => {
             include: {
                 model: User,
                 attributes: ['username']
-            }
+            },
+            order: [['createdAt', 'DESC']]
         });
         
         const topicsWithUserNames = topics.map(topic => ({
@@ -250,9 +270,6 @@ app.patch('/users/:userId/topics/:topicId/likes', async (req, res) => {
             return res.status(404).json({ error: 'Topic not found' });
         }
 
-        topic.likeCount += like;
-        await topic.save();
-
         let userTopic = await UserTopic.findOne({ where: { userId, topicId } });
 
         if (!userTopic) {
@@ -261,6 +278,16 @@ app.patch('/users/:userId/topics/:topicId/likes', async (req, res) => {
             userTopic.isLiked = like === 1;
             await userTopic.save();
         }
+
+        const likeCount = await UserTopic.count({
+            where: {
+                topicId,
+                isLiked: true
+            }
+        });
+        topic.likeCount = likeCount;
+        
+        await topic.save();
 
         res.status(200).json({ message: 'Topic updated successfully', topic });
     } catch (err) {
@@ -322,6 +349,55 @@ app.get('/topics/:id/comments', async (req, res) => {
         res.json(commentsWithUserNames);
     } catch (err) {
         res.status(500).json({ error: 'Failed to get topics', details: err.message });
+    }
+});
+
+// === GOOGLE AUTH ===
+const CLIENT_ID = process.env.CLIENT_ID;
+const client = new OAuth2Client(CLIENT_ID);
+
+app.post('/verify-token', async (req, res) => {
+    const token = req.body.token;
+
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: CLIENT_ID
+        });
+
+        const payload = ticket.getPayload();
+        const email = payload['email'];
+        const username = payload['name'];
+        const [ firstName, lastName = '' ] = username.split(' ');
+
+        let user = await User.findOne({ where: { email } });
+
+        // Login
+        if (user) {
+            await user.update({ online: true });
+            return res.status(200).json({ message: "User successfully logged in", user });
+        }
+
+        const registerData = {
+            firstName,
+            lastName,
+            username,
+            role: "User",
+            email,
+            phone: null,
+            password: "-",
+            topicCount: 0,
+            online: true
+        };
+
+        // Register
+        user = await User.create(registerData);
+        
+        return res.status(201).json({ message: "New user successfully added", user });
+
+    } catch (error) {
+        console.error(error);
+        res.status(401).json({ message: 'Invalid token' });
     }
 });
 

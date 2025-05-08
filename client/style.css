@@ -114,7 +114,6 @@ footer {
 
 #auth-btn {
     cursor: pointer;
-    margin-bottom: 10px;
     padding: 11px;
     border: none;
     border-bottom: 2px solid #0065cb;
@@ -131,8 +130,13 @@ footer {
     background-color: #0080ff;
 }
 
+.google-sign {
+    margin-top: 15px;
+}
+
 #logreg-link {
     cursor: pointer;
+    margin-top: 10px;
     align-self: center;
     font-size: 12px;
 }

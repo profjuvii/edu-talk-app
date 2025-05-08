@@ -1,4 +1,4 @@
-import { patchRequest, setupNavbar } from "./modules/utils.js";
+import { patchRequest, postRequest, setupNavbar } from "./modules/utils.js";
 import { initNewTopicPage } from "./modules/new-topic.js";
 import { loadProfilePage, initProfilePage } from "./modules/profile.js";
 import { loadHomePage, initHomePage } from "./modules/home.js";
@@ -25,10 +25,25 @@ async function main() {
             user = await renderLoginPage(URL);
         }
     } else {
-        // Login from page
-        user = await renderLoginPage(URL);
+        const token = JSON.parse(localStorage.getItem("EduTalkUserToken"));
+
+        if (token) {
+            const json = await postRequest(`${URL}/verify-token`, { token });
+
+            if (json.user) {
+                user = json.user;
+            } else {
+                // Login from page
+                localStorage.clear();
+                user = await renderLoginPage(URL);
+            }
+        } else {
+            // Login from page
+            user = await renderLoginPage(URL);
+        }
     }
 
+    location.hash = "home";
     setupNavbar();
 
     const routes = {
@@ -75,7 +90,6 @@ async function main() {
         loadPage(page);
     }
 
-    location.hash = "home";
     window.addEventListener("hashchange", router);
 }
 

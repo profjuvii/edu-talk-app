@@ -109,26 +109,95 @@ export async function renderRegisterPage(url) {
     });
 }
 
+// Google Auth
+function createGoogleCallback(url, authForm, msgPos, resolve) {
+    return async function handleCredentialResponse(response) {
+        const token = response.credential;
+        const json = await postRequest(`${url}/verify-token`, { token });
+
+        if (!json.user) {
+            addMessage(authForm, msgPos, json.message, "red");
+            return;
+        }
+
+        localStorage.setItem("EduTalkUserToken", JSON.stringify(token));
+        resolve(json.user);
+    };
+}
+
+function initGoogleAuth(callback) {
+    if (window.google && window.google.accounts && window.google.accounts.id) {
+        const signinDiv = document.getElementById("g_id_signin");
+
+        if (signinDiv) {
+            window.google.accounts.id.initialize({
+                client_id: "561895289784-8me8nsuconmt21ehecsfob9qagu9nfbv.apps.googleusercontent.com",
+                callback
+            });
+
+            window.google.accounts.id.renderButton(signinDiv, {
+                theme: "outline",
+                size: "large",
+                text: "sign_in_with",
+                shape: "rectangular"
+            });
+        } else {
+            console.warn("Google Sign-In container not found in DOM");
+        }
+    }
+}
+
+function waitForElement(selector, maxTries = 10, interval = 100) {
+    return new Promise((resolve, reject) => {
+        let tries = 0;
+        const check = () => {
+            const el = document.querySelector(selector);
+            if (el) return resolve(el);
+            if (++tries >= maxTries) return reject("Element not found: " + selector);
+            setTimeout(check, interval);
+        };
+        check();
+    });
+}
+
+function waitForGoogleAuth(maxTries = 10, interval = 100) {
+    return new Promise((resolve, reject) => {
+        let tries = 0;
+        const check = () => {
+            if (window.google && window.google.accounts && window.google.accounts.id) {
+                return resolve();
+            }
+            if (++tries >= maxTries) return reject("Google API not available");
+            setTimeout(check, interval);
+        };
+        check();
+    });
+}
+
 // Render login page
 export async function renderLoginPage(url) {
     location.hash = "login";
 
-    // Fetch login page
     const html = await fetch("./components/login.html").then(res => res.text());
     document.getElementById("app").innerHTML = html;
 
-    // Define base object and message position
     const authForm = document.querySelector("#login > .auth-form");
     const msgPos = "beforebegin";
 
     return new Promise(async (resolve) => {
-        // Go to register page
+        // Google Sign-In callback
+        await waitForElement("#g_id_signin");
+        await waitForGoogleAuth();
+
+        const googleCallback = createGoogleCallback(url, authForm, msgPos, resolve);
+        initGoogleAuth(googleCallback);
+
+        // Standard Log In
         document.getElementById("logreg-link").addEventListener("click", async () => {
             const user = await renderRegisterPage(url);
             resolve(user);
         });
 
-        // Send form data
         document.getElementById("auth-btn").addEventListener("click", async (event) => {
             event.preventDefault();
 
