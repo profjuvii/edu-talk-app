@@ -11,11 +11,28 @@
 ## Features
 
 * **User Authentication**: Secure registration and login via email or Google account.
+  
+  ![Login](screenshots/login.png)
+  ![Signup](screenshots/signup.png)
+
 * **Navigation**: Switch between app sections via a simple navigation panel.
+
 * **Home**: View posts from all users; like and comment on them.
+
+  ![Home Feed](screenshots/home-feed.png)
+  ![Comments](screenshots/comments.png)
+
 * **My Topics**: See only your own posts, with options to edit or delete.
+
+  ![My Topics](screenshots/my-topics.png)
+
 * **New Topic**: Create a post by entering text and optionally uploading an image.
+
+  ![New Topic](screenshots/new-topic.png)
+
 * **Profile**: View your personal info, log out, or delete your profile.
+
+  ![Profile](screenshots/profile.png)
 
 ## Tech Stack
 
@@ -49,7 +66,7 @@
    cd server
    npm install
    ```
-3. Create a `.env` file in the root directory with your `PORT` and `DATABASE_URL`.
+3. Create a `.env` file in the root directory with your `PORT`, `DATABASE_URL` and `CLIENT_ID`.
 4. Run the backend server:
 
    ```bash
