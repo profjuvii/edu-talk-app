@@ -105,9 +105,9 @@ async function initCommentBtn(url, target, user) {
             </div>
         </form>
         <div id="log-msg">
-            <span></span>
-            <span></span>
-            <span></span>
+            <span class="light"></span>
+            <span class="light"></span>
+            <span class="light"></span>
         </div>
     `;
 
