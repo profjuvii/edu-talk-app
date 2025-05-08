@@ -7,44 +7,42 @@ import { renderLoginPage, renderRegisterPage } from "./modules/auth.js";
 
 const URL = "http://localhost:3000";
 
-async function main() {
-    location.hash = "";
-    let user = null;
-
-    // Login from localStorage
+async function authenticateUser() {
+    navigateTo('');
+    
     const savedLoginData = JSON.parse(localStorage.getItem("EduTalkUser"));
 
     if (savedLoginData) {
         const json = await patchRequest(`${URL}/users/login`, savedLoginData);
 
         if (json.user) {
-            user = json.user;
-        } else {
-            // Login from page
-            localStorage.clear();
-            user = await renderLoginPage(URL);
+            return json.user;
         }
-    } else {
-        const token = JSON.parse(localStorage.getItem("EduTalkUserToken"));
+    }
+    
+    const token = JSON.parse(localStorage.getItem("EduTalkUserToken"));
 
-        if (token) {
-            const json = await postRequest(`${URL}/verify-token`, { token });
+    if (token) {
+        const json = await postRequest(`${URL}/verify-token`, { token });
 
-            if (json.user) {
-                user = json.user;
-            } else {
-                // Login from page
-                localStorage.clear();
-                user = await renderLoginPage(URL);
-            }
-        } else {
-            // Login from page
-            user = await renderLoginPage(URL);
+        if (json.user) {
+            return json.user;
         }
     }
 
-    location.hash = "home";
+    localStorage.clear();
+    return await renderLoginPage(URL);
+}
+
+window.navigateTo = (page) => {
+    location.hash = page;
+};
+
+function initRouter(user) {
+    navigateTo('Home');
     setupNavbar();
+
+    const app = document.getElementById("app");
 
     const routes = {
         register: {
@@ -55,28 +53,31 @@ async function main() {
         },
         home: {
             render: async () => {
-                document.getElementById("app").innerHTML = await loadHomePage();
+                app.innerHTML = await loadHomePage();
                 initHomePage(URL, user);
             }
         },
         "my-topics": {
             render: async () => {
-                document.getElementById("app").innerHTML = await loadMyTopicsPage();
+                app.innerHTML = await loadMyTopicsPage();
                 initMyTopicsPage(URL, user);
             }
         },
         "new-topic": {
             render: async () => {
                 const html = await fetch("./components/new-topic.html").then(res => res.text());
-                document.getElementById("app").innerHTML = html;
+                app.innerHTML = html;
                 initNewTopicPage(URL, user);
             }
         },
         profile: {
             render: async () => {
-                document.getElementById("app").innerHTML = await loadProfilePage(user);
+                app.innerHTML = await loadProfilePage(user);
                 initProfilePage(URL, user.id);
             }
+        },
+        "not-found": {
+            render: () => app.innerHTML = "<h2>404 Page Not Found</h2>"
         }
     };
 
@@ -91,6 +92,11 @@ async function main() {
     }
 
     window.addEventListener("hashchange", router);
+}
+
+async function main() {
+    let user = await authenticateUser();
+    initRouter(user);
 }
 
 document.addEventListener("DOMContentLoaded", main);
