@@ -9,7 +9,7 @@ const URL = "http://localhost:3000";
 
 async function authenticateUser() {
     navigateTo('');
-    
+
     const savedLoginData = JSON.parse(localStorage.getItem("EduTalkUser"));
 
     if (savedLoginData) {
@@ -39,7 +39,7 @@ window.navigateTo = (page) => {
 };
 
 function initRouter(user) {
-    navigateTo('Home');
+    navigateTo('home');
     setupNavbar();
 
     const app = document.getElementById("app");
