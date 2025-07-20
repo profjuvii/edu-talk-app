@@ -4,7 +4,7 @@
 [![node.js](https://img.shields.io/badge/node.js-8CC84B?style=flat\&logo=node.js\&logoColor=white)](https://nodejs.org/)
 [![postgresql](https://img.shields.io/badge/postgresql-blue?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
-# Edu Talk Web Application
+# Edu Talk App
 
 **Edu Talk** is a school-oriented web application designed to enhance communication between students and teachers. It offers an improved forum-like experience with additional features to make interactions more engaging and personal.
 
